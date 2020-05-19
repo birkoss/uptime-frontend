@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 
-import {
-    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
-  } from 'recharts';
+import Server from './Server';
 
 import { ApiGetHeaders } from '../helpers';
 
@@ -11,12 +9,13 @@ class Dashboard extends Component {
         super(props);
 
         this.state = {
-            data: [],
+            servers: [],
         };
     }
 
     componentDidMount() {
-        fetch("https://uptime.birkoss.com/api/servers/2/endpoints/1/pings/stats/?year=2020&month=05&day=19&grouping=hour", {
+        //fetch("https://uptime-api.birkoss.com/api/servers/2/endpoints/1/pings/stats/?year=2020&month=05&day=19&grouping=hour", {
+        fetch("https://uptime-api.birkoss.com/api/servers/", {
             method: 'GET',
             headers: ApiGetHeaders()
         })
@@ -31,36 +30,34 @@ class Dashboard extends Component {
             })
             .then(res => {
                 let data = [];
-                res.forEach(stat => {
+
+                res.forEach(server => {
                     data.push({
-                        date: stat['grouping'].substr(0, 13).replace("T", " ") + ":00",
-                        average: stat['response_time__avg'],
-                        min: stat['response_time__min'],
-                        max: stat['response_time__max'],
-                    })
+                        id: server['id'],
+                        key: 'server-' + server['id'],
+                        url: server['protocol']['slug'] + "://" + server['hostname'],
+                        endpoints: []
+                    });
                 });
 
                 this.setState({
-                    data
+                    servers: data,
                 });
-            }).catch(error => {
-                console.log("error #2", error);
-            });
-        }
+            })
+    }
 
 	render() {
 		return (
-			<ResponsiveContainer width='100%' minHeight='300px'>
-                <LineChart data={this.state.data} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="average" stroke="#8884d8" activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="min" stroke="#00ff00" />
-                    <Line type="monotone" dataKey="max" stroke="#ff0000" />
-                </LineChart>
-			</ResponsiveContainer>
+            <div>
+            {
+                this.state.servers.map(server => {
+                    console.log(JSON.stringify(server));
+                    return (
+                        <Server key={ server['id'] } serverId={ server['id'] } serverUrl={ server['url'] } />
+                    )   
+                })
+            }
+            </div>
 		)
 	}
 }

@@ -22,7 +22,7 @@ class Login extends Component {
     }
 
     onFormFinish(values) {
-        fetch('https://uptime.birkoss.com/api/auth/login/', {
+        fetch('https://uptime-api.birkoss.com/api/auth/login/', {
 			method: 'POST',
 			headers: {
 				'Content-type': 'application/json',
