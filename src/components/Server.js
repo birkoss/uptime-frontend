@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
 
-import { Card } from 'antd';
+import { Card, Select, Tabs } from 'antd';
 
 import { ApiGetHeaders } from '../helpers';
 import Endpoint from './Endpoint';
+
+const { TabPane } = Tabs;
+const { Option } = Select;
 
 class Server extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            apiGrouping: 'hour',
+            apiEndpoint: 'stats',
             endpoints: [],
         };
     }
@@ -44,16 +49,40 @@ class Server extends Component {
             });
     }
 
+    onSelectChanged(option, value) {
+        let data = {};
+        data[option] = value;
+        this.setState(data);
+    }
+
     render() {
         return (
-            <Card title={ this.props.serverUrl } extra={<a href="#">More</a>}>
-                {
-                    this.state.endpoints.map(endpoint => {
-                        return (
-                            <Endpoint serverId={ this.props['serverId'] } endpointId={ endpoint['id'] } endpointUrl={ endpoint['url'] } />
-                        );
-                    })
-                }
+            <Card title={ this.props.serverUrl } extra={ <div>
+                { this.state.apiEndpoint }
+                <Select defaultValue="stats" onChange={ (value) => this.onSelectChanged('apiEndpoint', value) }>
+                    <Option value="stats">Response time</Option>
+                    <Option value="codes">Response Code</Option>
+                </Select>
+
+                <Select defaultValue="hour" onChange={ (value) => this.onSelectChanged('apiGrouping', value) }>
+                    <Option value="hour">Hourly</Option>
+                    <Option value="day">Daily</Option>
+                    <Option value="month">Monthly</Option>
+                </Select>
+                
+                </div> }>
+                <Tabs type="card">
+                    {
+                        this.state.endpoints.map(endpoint => {
+                            console.log(endpoint);
+                            return (
+                                <TabPane tab={ endpoint['url'] }>
+                                    <Endpoint key={ endpoint['key'] } apiEndpoint={ this.state.apiEndpoint} apiGrouping={ this.state.apiGrouping } serverId={ this.props['serverId'] } endpointId={ endpoint['id'] } endpointUrl={ endpoint['url'] } />
+                                </TabPane>
+                            );
+                        })
+                    }
+                </Tabs>
             </Card>
         );
     }

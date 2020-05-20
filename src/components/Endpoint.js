@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 
-import { Typography } from 'antd';
-
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
   } from 'recharts';
 
 import { ApiGetHeaders } from '../helpers';
 
-const { Title } = Typography;
-
 class Endpoint extends Component {
     constructor(props) {
         super(props);
+
+        console.log(this.props);
 
         this.state = {
             stats: [],
@@ -20,7 +18,7 @@ class Endpoint extends Component {
     }
 
     componentDidMount() {
-        fetch("https://uptime-api.birkoss.com/api/servers/" + this.props['serverId'] + "/endpoints/" + this.props['endpointId'] + "/pings/stats/?grouping=hour&year=2020&month=05&day=19", {
+        fetch("https://uptime-api.birkoss.com/api/servers/" + this.props['serverId'] + "/endpoints/" + this.props['endpointId'] + "/pings/" + this.props['apiEndpoint'] + "/?grouping=" + this.props['apiGrouping'], {
             method: 'GET',
             headers: ApiGetHeaders()
         })
@@ -53,7 +51,6 @@ class Endpoint extends Component {
     render() {
         return (
             <div>
-                <Title level={2}>{ this.props['endpointUrl'] }</Title>
                 <ResponsiveContainer width='100%' minHeight='300px'>
                     <LineChart data={this.state.stats} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
                         <CartesianGrid strokeDasharray="3 3" />
