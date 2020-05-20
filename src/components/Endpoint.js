@@ -11,6 +11,7 @@ class Endpoint extends Component {
         super(props);
 
         this.state = {
+            codes: [],
             stats: [],
         };
     }
@@ -31,6 +32,7 @@ class Endpoint extends Component {
             })
             .then(res => {
                 let data = [];
+                let codes = [];
 
                 if (this.props['apiEndpoint'] === "stats") {
                         res.forEach(stat => {
@@ -49,6 +51,11 @@ class Endpoint extends Component {
                     });
                 } else {
                     for (let key in res) {
+                        for (let code in res[key]['codes']) {
+                            if (codes.indexOf(code) === -1) {
+                                codes.push(code);
+                            }
+                        }
                         let s = res[key]['codes'];
                         s['date'] = key;
 
@@ -58,11 +65,14 @@ class Endpoint extends Component {
 
                 this.setState({
                     stats: data.reverse(),
+                    codes: codes,
                 });
             })
     }
 
     render() {
+        let colors = ["#8884d8", "#82ca9d", "#82ca9d", "#82ca9d", "#82ca9d", "#82ca9d"];
+
         return (
             <div>
                 <ResponsiveContainer width='100%' minHeight='300px'>
@@ -87,8 +97,13 @@ class Endpoint extends Component {
       <YAxis />
       <Tooltip />
       <Legend />
-      <Bar dataKey="200" fill="#8884d8" />
-      <Bar dataKey="500" fill="#82ca9d" />
+      {
+          this.state.codes.map((code, index) => {
+            return (
+                <Bar key={ code } dataKey={ code } fill={ colors[index] } />
+            );
+          })
+      }
     </BarChart>
                     )
                 }

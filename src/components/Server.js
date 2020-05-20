@@ -75,7 +75,7 @@ class Server extends Component {
                         this.state.endpoints.map(endpoint => {
                             return (
                                 <TabPane tab={ endpoint['url'] } key={ endpoint['key'] }>
-                                    <Endpoint key={ endpoint['key'] } apiEndpoint={ this.state.apiEndpoint} apiGrouping={ this.state.apiGrouping } serverId={ this.props['serverId'] } endpointId={ endpoint['id'] } endpointUrl={ endpoint['url'] } />
+                                    <Endpoint key={ endpoint['key'] + "-" + this.state.apiEndpoint + "-" + this.state.apiGrouping } apiEndpoint={ this.state.apiEndpoint} apiGrouping={ this.state.apiGrouping } serverId={ this.props['serverId'] } endpointId={ endpoint['id'] } endpointUrl={ endpoint['url'] } />
                                 </TabPane>
                             );
                         })
