@@ -104,7 +104,7 @@ class Endpoint extends Component {
 
     render() {
         let colors = ["#8884d8", "#82ca9d", "#82ca9d", "#82ca9d", "#82ca9d", "#82ca9d"];
-        
+
         return (
             <div>
                 <ResponsiveContainer width='100%' minHeight='300px'>
