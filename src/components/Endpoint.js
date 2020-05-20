@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import {
-    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+    BarChart, LineChart, Bar, Legend, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
   } from 'recharts';
 
 import { ApiGetHeaders } from '../helpers';
@@ -9,8 +9,6 @@ import { ApiGetHeaders } from '../helpers';
 class Endpoint extends Component {
     constructor(props) {
         super(props);
-
-        console.log(this.props);
 
         this.state = {
             stats: [],
@@ -33,17 +31,33 @@ class Endpoint extends Component {
             })
             .then(res => {
                 let data = [];
-                res.forEach(stat => {
-                    data.push({
-                        date: stat['grouping'].substr(11, 2) + "h",
-                        average: stat['response_time__avg'],
-                        min: stat['response_time__min'],
-                        max: stat['response_time__max'],
+
+                if (this.props['apiEndpoint'] === "stats") {
+                        res.forEach(stat => {
+                            let dateLabel = stat['grouping'].substr(11, 2) + "h";
+                            if (this.props['apiGrouping'] === "day") {
+                                dateLabel = stat['grouping'].substr(8, 2);
+                            } else if (this.props['apiGrouping'] === "month") {
+                                dateLabel = stat['grouping'].substr(5, 2);
+                            }
+                            data.push({
+                                date: dateLabel,
+                                average: stat['response_time__avg'],
+                                min: stat['response_time__min'],
+                                max: stat['response_time__max'],
+                            });
                     });
-                });
+                } else {
+                    for (let key in res) {
+                        let s = res[key]['codes'];
+                        s['date'] = key;
+
+                        data.push(s);
+                    }
+                }
 
                 this.setState({
-                    stats: data,
+                    stats: data.reverse(),
                 });
             })
     }
@@ -52,6 +66,7 @@ class Endpoint extends Component {
         return (
             <div>
                 <ResponsiveContainer width='100%' minHeight='300px'>
+                    { this.props['apiEndpoint'] === 'stats' ? (
                     <LineChart data={this.state.stats} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" />
@@ -60,7 +75,23 @@ class Endpoint extends Component {
                         <Line type="monotone" dataKey="average" stroke="#8884d8" activeDot={{ r: 8 }} />
                         <Line type="monotone" dataKey="min" stroke="#00ff00" />
                         <Line type="monotone" dataKey="max" stroke="#ff0000" />
-                    </LineChart>
+                    </LineChart>) : (
+      <BarChart
+      data={this.state.stats}
+      margin={{
+        top: 5, right: 30, left: 20, bottom: 5,
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="200" fill="#8884d8" />
+      <Bar dataKey="500" fill="#82ca9d" />
+    </BarChart>
+                    )
+                }
                 </ResponsiveContainer>
             </div>
         );

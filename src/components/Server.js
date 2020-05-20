@@ -58,7 +58,6 @@ class Server extends Component {
     render() {
         return (
             <Card title={ this.props.serverUrl } extra={ <div>
-                { this.state.apiEndpoint }
                 <Select defaultValue="stats" onChange={ (value) => this.onSelectChanged('apiEndpoint', value) }>
                     <Option value="stats">Response time</Option>
                     <Option value="codes">Response Code</Option>
@@ -74,9 +73,8 @@ class Server extends Component {
                 <Tabs type="card">
                     {
                         this.state.endpoints.map(endpoint => {
-                            console.log(endpoint);
                             return (
-                                <TabPane tab={ endpoint['url'] }>
+                                <TabPane tab={ endpoint['url'] } key={ endpoint['key'] }>
                                     <Endpoint key={ endpoint['key'] } apiEndpoint={ this.state.apiEndpoint} apiGrouping={ this.state.apiGrouping } serverId={ this.props['serverId'] } endpointId={ endpoint['id'] } endpointUrl={ endpoint['url'] } />
                                 </TabPane>
                             );

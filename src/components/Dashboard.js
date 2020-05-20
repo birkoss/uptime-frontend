@@ -51,9 +51,8 @@ class Dashboard extends Component {
             <div>
             {
                 this.state.servers.map(server => {
-                    console.log(JSON.stringify(server));
                     return (
-                        <Server key={ server['id'] } serverId={ server['id'] } serverUrl={ server['url'] } />
+                        <Server key={ server['key'] } serverId={ server['id'] } serverUrl={ server['url'] } />
                     )   
                 })
             }
