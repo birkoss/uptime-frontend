@@ -16,6 +16,16 @@ class Endpoint extends Component {
         };
     }
 
+    getLabel(label, apiGrouping) {
+        let dateLabel = label.substr(11, 2) + "h";
+        if (apiGrouping === "day") {
+            dateLabel = label.substr(8, 2);
+        } else if (apiGrouping === "month") {
+            dateLabel = label.substr(5, 2);
+        }
+        return dateLabel;
+    }
+
     componentDidMount() {
         fetch("https://uptime-api.birkoss.com/api/servers/" + this.props['serverId'] + "/endpoints/" + this.props['endpointId'] + "/pings/" + this.props['apiEndpoint'] + "/?grouping=" + this.props['apiGrouping'], {
             method: 'GET',
@@ -36,14 +46,8 @@ class Endpoint extends Component {
 
                 if (this.props['apiEndpoint'] === "stats") {
                         res.forEach(stat => {
-                            let dateLabel = stat['grouping'].substr(11, 2) + "h";
-                            if (this.props['apiGrouping'] === "day") {
-                                dateLabel = stat['grouping'].substr(8, 2);
-                            } else if (this.props['apiGrouping'] === "month") {
-                                dateLabel = stat['grouping'].substr(5, 2);
-                            }
                             data.push({
-                                date: dateLabel,
+                                date: this.getLabel(stat['grouping'], this.props['apiGrouping']),
                                 average: stat['response_time__avg'],
                                 min: stat['response_time__min'],
                                 max: stat['response_time__max'],
@@ -57,10 +61,11 @@ class Endpoint extends Component {
                             }
                         }
                         let s = res[key]['codes'];
-                        s['date'] = key;
+                        s['date'] = this.getLabel(key, this.props['apiGrouping']);
 
                         data.push(s);
                     }
+                    console.log(data, codes);
                 }
 
                 this.setState({
@@ -72,7 +77,7 @@ class Endpoint extends Component {
 
     render() {
         let colors = ["#8884d8", "#82ca9d", "#82ca9d", "#82ca9d", "#82ca9d", "#82ca9d"];
-
+        
         return (
             <div>
                 <ResponsiveContainer width='100%' minHeight='300px'>
@@ -93,7 +98,7 @@ class Endpoint extends Component {
       }}
     >
       <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
+      <XAxis dataKey="date" />
       <YAxis />
       <Tooltip />
       <Legend />
