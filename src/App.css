@@ -1,0 +1,6 @@
+.recharts-tooltip-wrapper {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid #ccc;
+    padding: 10px;
+    padding-bottom: 0;
+}
